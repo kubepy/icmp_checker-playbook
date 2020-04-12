@@ -1,0 +1,5 @@
+[icmp]
+localhost ansible_connection=local
+
+[icmp:vars]
+ip_address=["1.1.1.1/24","8.8.8.8/24"]
