@@ -1,0 +1,18 @@
+---
+# tasks file for icmp_filter
+- name: Clean up & Touch the {{ ping_ok_file_linux }} file
+  file:
+    path: "{{ ping_ok_file_linux }}"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - touch
+
+- name: Check Ping & Create the ping_result file for Linux (ttl<=64)
+  shell: while read ips; do export ips_target=${ips} ; bash -c "if [ `ping -c 1 ${ips_target} | grep -o ttl=[[:alnum:]]* | awk -F '=' '{print $2}'` -le '64' ]; then echo ${ips_target} >> {{ ping_ok_file_linux }} ;fi &" ; done < {{ ping_ok_file }}
+  changed_when: false
+
+- name: The path of Result file
+  debug:
+    msg:
+      - "ping_ok for Linux file (ttl<=64) is in '{{ ping_ok_file_linux }}'"

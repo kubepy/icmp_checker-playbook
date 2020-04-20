@@ -1,0 +1,5 @@
+---
+# defaults file for icmp_filter
+
+ping_ok_file_linux: /tmp/ping_ok-linux.txt
+ping_ok_file: /tmp/ping_ok.txt

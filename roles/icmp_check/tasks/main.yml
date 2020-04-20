@@ -1,0 +1,46 @@
+---
+# tasks file for icmp_check
+- name: Remote execute the shell script cidr-to-ip.sh for '{{ ip_address | join(' ') }}'
+  script: "cidr-to-ip.sh {{ ip_address | join(' ') }}"
+  register: cidr_to_ip_results
+
+- name: Set facts for ip_list
+  set_fact:
+    ip_list: "{{ cidr_to_ip_results.stdout }}"
+
+- name: Clean up & Touch the {{ ping_ok_file }} file
+  file:
+    path: "{{ ping_ok_file }}"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - touch
+
+- name: Clean up & Touch the {{ ping_fail_file }} file
+  file:
+    path: "{{ ping_fail_file }}"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - touch
+
+- name: Check Ping & Create the ping_result file
+  shell: while read ips; do export ips_target=${ips} ; bash -c "ping -c {{ ping_count }} ${ips_target} && echo ${ips_target} >> {{ ping_ok_file }} || echo ${ips_target} >> {{ ping_fail_file }} &" ; done <<< "{{ ip_list }}"
+  changed_when: false
+
+- name: Wait for ping result
+  wait_for:
+    timeout: "{{ (ping_count | int) * 4 + 2 }}"
+
+- name: Sort the result
+  shell: |
+    ping_ok_lines=$(sed '/^$/d' {{ ping_ok_file }} | sort -n -t . -k 1,1 -k 2,2 -k 3,3 -k 4,4)
+    ping_fail_lines=$(sed '/^$/d' {{ ping_fail_file }} | sort -n -t . -k 1,1 -k 2,2 -k 3,3 -k 4,4)
+    echo "$ping_ok_lines" > {{ ping_ok_file }}
+    echo "$ping_fail_lines" > {{ ping_fail_file }}
+
+- name: The path of Result file
+  debug:
+    msg:
+      - "ping_ok file is in '{{ ping_ok_file }}'"
+      - "ping_fail file is in '{{ ping_fail_file }}'"

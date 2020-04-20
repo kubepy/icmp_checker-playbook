@@ -1,0 +1,10 @@
+---
+# defaults file for icmp_check
+ip_address: 
+  - "192.168.1.1/24"
+  - "10.10.0.1/24"
+ip_list: ""
+ping_ok_file: /tmp/ping_ok.txt
+ping_fail_file: /tmp/ping_fail.txt
+ping_count: 5
+
