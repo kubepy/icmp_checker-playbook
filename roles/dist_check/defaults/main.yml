@@ -1,0 +1,9 @@
+---
+# defaults file for dist_check
+
+ping_ok_file_linux: /tmp/ping_ok-linux.txt
+ping_ok_file_linux_rhel5: /tmp/ping_ok-linux-rhel5.txt
+ping_ok_file_linux_rhel6: /tmp/ping_ok-linux-rhel6.txt
+ping_ok_file_linux_rhel7: /tmp/ping_ok-linux-rhel7.txt
+ping_ok_file_linux_rhel8: /tmp/ping_ok-linux-rhel8.txt
+ping_ok_file: /tmp/ping_ok.txt
